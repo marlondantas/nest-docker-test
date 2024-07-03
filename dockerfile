@@ -1,5 +1,8 @@
 # Estágio de Build
-FROM node:14 AS builder
+FROM node:22-alpine AS builder
+
+
+RUN apk add --update --no-cache curl py-pip
 
 # Define o diretório de trabalho
 WORKDIR /usr/src/app
@@ -15,20 +18,29 @@ COPY . .
 RUN npm run build
 
 # Estágio de Execução
-FROM node:14-alpine
+FROM node:22-alpine as prd
+
+RUN apk add --update --no-cache curl py-pip
 
 # Cria o diretório da aplicação no contêiner
 WORKDIR /usr/src/app
 
+
+
 # Copia apenas os arquivos necessários para a execução
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
+
 COPY package*.json ./
 
 # Instala apenas as dependências de produção
 RUN npm install --only=production
 
+# create upload files folder
+RUN mkdir -p ./dist/uploads
+
 # Expõe a porta que a aplicação utiliza
 EXPOSE 3000
 
 # Define o comando para executar a aplicação
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
