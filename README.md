@@ -35,6 +35,11 @@ $ npm install
 ## Running the app
 
 ```bash
+
+docker build -t ghcr.io/j-m-servicos-de-informatica/nestjsdocker:v1.0.1 .
+docker push ghcr.io/j-m-servicos-de-informatica/nestjsdocker:v1.0.1
+
+
 # development
 $ npm run start
 

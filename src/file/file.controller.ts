@@ -5,6 +5,7 @@ import {
   UseInterceptors,
   Body,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
@@ -14,6 +15,7 @@ import { join } from 'path';
 
 import { Get, Param } from '@nestjs/common';
 import { Response } from 'express';
+import { AuthGuard } from 'nest-keycloak-connect';
 
 @Controller('files')
 export class FileController {
@@ -21,6 +23,13 @@ export class FileController {
 
   @Get(':userUuid')
   async findAllFiles(@Param('userUuid') userUuid: string) {
+    const files = await this.fileService.findAllFiles(userUuid);
+    return files;
+  }
+
+  @Get('/secure/:userUuid')
+  @UseGuards()
+  async findAllFilesSecure(@Param('userUuid') userUuid: string) {
     const files = await this.fileService.findAllFiles(userUuid);
     return files;
   }
