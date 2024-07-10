@@ -13,9 +13,14 @@ import {
   RoleGuard,
 } from 'nest-keycloak-connect';
 import { APP_GUARD } from '@nestjs/core';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
   imports: [
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
+      port: 3002,
+    }),
     ConfigModule.forRoot({
       isGlobal: true, // Torna as configurações acessíveis globalmente
     }),
@@ -53,6 +58,10 @@ import { APP_GUARD } from '@nestjs/core';
     // outros módulos ou configurações
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     AppService,
   ],
   controllers: [AppController],
